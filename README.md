@@ -1,5 +1,5 @@
-UPDATE **all** CODE SNIPPETS!!
-
+//UPDATE **all** CODE SNIPPETS!!
+//REMOVE ID ATTRIBUTE FROM FORM??
 
 # Mapping Dispatch to Props
 
@@ -26,8 +26,8 @@ Finally, in the last lesson, we learned about action creators and the benefits o
 using them rather than passing action objects directly into the `dispatch` method. 
 
 In this codealong we will implement an action creator for a simple todo list app. 
-We will also learn how to pass a second argument, `mapDispatchToProps`, 
-to `connect` to further streamline and compartmentalize our code.
+We will also learn how to pass a second argument to `connect`, `mapDispatchToProps`, 
+to further streamline and compartmentalize our code.
 
 ## Our Todo App
 
@@ -164,7 +164,7 @@ Finally, the `connect` method passes the return value of the `mapStateToProps`
 method as props to our component, enabling us to access `this.props.todos` in 
 our `render` method. `connect` also passes the `dispatch` method as props 
 automatically, enabling us to access `this.props.dispatch` in our 
-`onHandleSubmit` method:
+`handleOnSubmit` method:
 
 ```javascript
 // ./src/app.js
@@ -189,7 +189,7 @@ action logged from the reducer.
 
 #### Implementing an Action Creator
 
-Currently, in our `onHandleSubmit` method, we are passing our action directly:
+Currently, in our `handleOnSubmit` method, we are passing our action directly:
 
 ```javascript
 this.props.dispatch({ type: 'ADD_TODO', todo: this.state.todo });
@@ -215,7 +215,7 @@ our `App` component:
 
 The `addTodo` action creator returns an action object with a type of 'ADD_TODO' 
 and a todo payload taken from our local state. Then we just need to update our 
-`onHandleSubmit` method to use our action creator:
+`handleOnSubmit` method to use our action creator:
 
 ```javascript
   handleOnSubmit(event) {
@@ -257,7 +257,7 @@ To get everything hooked up, let's import our action creator into `App.js`:
 import { addTodo } from  './actions/todos';
 ```
 
-Then we just need to modify our dispatch inside the `onHandleSubmit` method as 
+Then we just need to modify our dispatch inside the `handleOnSubmit` method as 
 follows:
 
 ```javascript
@@ -373,8 +373,8 @@ action creator by referencing it as a prop:
 ...
 ```
 
-This code calls the `handleOnSubmit()` function after the Submit button is 
-clicked. The `handleOnSubmit()` function references and then executes the 
+This code calls the `handleOnSubmit()` function when the form is 
+submitted. The `handleOnSubmit()` function references and then executes the 
 `addTodo()` function from props.  Note that the method being called by 
 `handleOnSubmit` is **not** the action creator itself; instead, the action 
 creator is being dispatched _inside_ the function called with 
@@ -454,7 +454,58 @@ With these changes, our final code looks like this:
 
 // ./src/App.js
 
-INSERT FULL FINAL CODE HERE
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import './App.css';
+import { addTodo } from  './actions/todos';
+
+class App extends Component {
+
+  state = {
+    todo: ''
+  }
+
+  addTodo = () => {
+    return ({
+      type: 'ADD_TODO',
+      todo: this.state.todo
+    })
+  }
+
+  handleOnChange = event => {
+    this.setState({
+      todo: event.target.value
+    });
+  }
+
+  handleOnSubmit = event => {
+    event.preventDefault();
+    console.log("Todo being added: ", this.state.todo);
+    this.props.addTodo(this.state.todo);
+    this.setState({ todo: '' });
+  }
+
+  render() {
+    const renderTodos = () => this.props.todos.map(todo => <li key={todo}>{todo}</li>);
+    return (
+      <div className="App">
+      <form onSubmit={(event) => this.handleOnSubmit(event)}>
+        <input
+          type="text"
+          onChange={(event) => this.handleOnChange(event)}
+          id="todos"
+          placeholder="add todo" 
+          value={this.state.todo}/>
+        <input type="submit" />
+      </form>
+      <h2>Todos:</h2>
+        <ol>{renderTodos()}</ol>
+      </div>
+    );
+  }
+};
+
+export default connect(state => ({ todos: state.todos }), { addTodo })(App);
 
 ```
 
@@ -462,7 +513,12 @@ INSERT FULL FINAL CODE HERE
 
 // ./src/actions/todos.js
 
-INSERT ACTION CODE HERE
+export const addTodo = (todo) => {
+    return { 
+      type: 'ADD_TODO',
+      todo: todo
+    };
+  };
 
 ```
 
