@@ -13,9 +13,9 @@ part of our code, and display logic in a different part.
 
 In other words, we're moving knowledge of _Redux_ outside our components.
 
-What prevented us from fully removing a reference to __Redux__ inside our
+What prevented us from fully removing a reference to **Redux** inside our
 components was that we did not know how to dispatch actions without calling
-`store.dispatch()` from our component.  Well, in this lesson we'll learn how
+`store.dispatch()` from our component. Well, in this lesson we'll learn how
 to do just that. We'll remove knowledge of the store from our components by
 using a function similar to `mapStateToProps()`, which is called
 `mapDispatchToProps()`.
@@ -24,15 +24,14 @@ using a function similar to `mapStateToProps()`, which is called
 
 To begin, take a look at the starting code provided in `src/App.js`:
 
-```js
+```jsx
 // ./src/App.js
-import React, { Component } from 'react';
-import './App.css';
-import { connect } from 'react-redux';
-import { addItem } from  './actions/items';
+import React, { Component } from "react";
+import "./App.css";
+import { connect } from "react-redux";
+import { addItem } from "./actions/items";
 
 class App extends Component {
-
   handleOnClick() {
     this.props.store.dispatch(addItem());
   }
@@ -40,18 +39,16 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <button onClick={(event) => this.handleOnClick(event)}>
-          Click
-          </button>
+        <button onClick={(event) => this.handleOnClick(event)}>Click</button>
         <p>{this.props.items.length}</p>
       </div>
     );
   }
-};
+}
 
 const mapStateToProps = (state) => {
   return {
-    items: state.items
+    items: state.items,
   };
 };
 
@@ -61,14 +58,14 @@ export default connect(mapStateToProps)(App);
 We can see that `mapStateToProps()` is already implemented and is
 making `state.items` available to `App` as `this.props.items`. We
 also see that the button in `render()` calls `handleOnClick()` when
-clicked. The `handleOnClick()` does one thing - it dispatches an action 
+clicked. The `handleOnClick()` does one thing - it dispatches an action
 to the _store_.
 
 In the earlier `mapStateToProps()` Readme, we changed our code such that we no
 longer reference the store to get an updated state of the items, but here we
 still reference the store in `handleOnClick()` to dispatch an action:
 
-```javascript
+```jsx
 // ./src/app.js
 ...
 
@@ -79,18 +76,18 @@ handleOnClick(){
 ...
 ```
 
-Okay, so this may seem small, but it introduces our old problem. Our component is
-no longer indifferent about its state management system. Instead, this line of
-code makes the component reliant on __Redux__.  
+Okay, so this may seem small, but it introduces our old problem. Our component
+is no longer indifferent about its state management system. Instead, this line
+of code makes the component reliant on **Redux**.
 
 Well we can fix this problem with our `connect()` function. Just like we can
-write code like `connect(mapStateToProps)(App)` to add new props to our __App__
+write code like `connect(mapStateToProps)(App)` to add new props to our **App**
 component, we can pass `connect()` a second argument, and add our _action
 creator_ as props. Then we can reference this action creator as a prop to call
 it from our component. We'll spend the rest of this lesson unpacking the
 previous sentence. Okay, let's see how this works.
 
-#### Using `mapDispatchToProps`
+### Using `mapDispatchToProps`
 
 To quickly review: The first argument passed into `connect()` is a function.
 That function is written to accept the Redux store's state as an argument and
@@ -99,51 +96,50 @@ this returned object will become values we can access in the component we've
 wrapped with `connect()`. The below example, for instance, would make the entire
 state available as a prop:
 
-```js
-const mapStateToProps = state => {
-  return state
-}
+```jsx
+const mapStateToProps = (state) => {
+  return state;
+};
 ```
 
 We call this function `mapStateToProps` because that is what it does. This
-function is passed in as the _first_ argument to `connect()`. When `connect()` executes, it calls the function passed in as its first argument, passing in the current state to the function.
+function is passed in as the _first_ argument to `connect()`. When `connect()`
+executes, it calls the function passed in as its first argument, passing in the
+current state to the function.
 
 Just like the first argument, `connect()` accepts a **function** for the
 _second_ argument. This time, again, when `connect()` executes, it calls the
 second function passed in. However, instead of passing _state_ in, it passes in
 the _dispatch_ function. This means we can write a function assuming we have
-access to `dispatch()`. We call it `mapDispatchToProps` because that is
-what it does. Updating our `./src/App.js` file, it looks like the following:
+access to `dispatch()`. We call it `mapDispatchToProps` because that is what it
+does. Updating our `./src/App.js` file, it looks like the following:
 
-``` javascript
+```jsx
 // src/App.js
 
-import React, { Component } from 'react';
-import './App.css';
-import { connect } from 'react-redux';
-import { addItem } from  './actions/items';
+import React, { Component } from "react";
+import "./App.css";
+import { connect } from "react-redux";
+import { addItem } from "./actions/items";
 
 class App extends Component {
-
-  handleOnClick = event => {
-    this.props.addItem() // Code change: this.props.store.dispatch is no longer being called
-  }
+  handleOnClick = (event) => {
+    this.props.addItem(); // Code change: this.props.store.dispatch is no longer being called
+  };
 
   render() {
     return (
       <div className="App">
-        <button onClick={this.handleOnClick}>
-          Click
-          </button>
+        <button onClick={this.handleOnClick}>Click</button>
         <p>{this.props.items.length}</p>
       </div>
     );
   }
-};
+}
 
 const mapStateToProps = (state) => {
   return {
-    items: state.items
+    items: state.items,
   };
 };
 
@@ -151,11 +147,11 @@ const mapStateToProps = (state) => {
 // It then returns an object that contains a function as a value!
 // Notice above in handleOnClick() that this function, addItem(),
 // is what is called, NOT the addItem action creator itself.
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
     addItem: () => {
-      dispatch(addItem())
-    }
+      dispatch(addItem());
+    },
   };
 };
 
@@ -165,9 +161,9 @@ export default connect(mapStateToProps, mapDispatchToProps)(App);
 Okay, so let's see what adding our `mapDispatchToProps()` function, and passing it
 through as a second argument accomplished. We'll place in another debugger in
 our component, right at the beginning of `render()`, just before the return
-statement. 
+statement.
 
-```js
+```jsx
 // src/App.js
 ...
 render() {
@@ -193,10 +189,11 @@ a function. The `dispatch` function is available as an argument to
 `mapDispatchToProps`, we're able to include `dispatch` in the definition; we've
 bundled everything we need into a single prop value.
 
-With `dispatch` integrated into `this.props.addItem`, we can change our code such that when the `handleOnClick()` function
-gets called, we execute our action creator by referencing it as a prop:
+With `dispatch` integrated into `this.props.addItem`, we can change our code
+such that when the `handleOnClick()` function gets called, we execute our action
+creator by referencing it as a prop:
 
-```javascript
+```jsx
 // ./src/App.js
 
 ...
@@ -208,32 +205,32 @@ handleOnClick = event => {
 ...
 ```
 
-This code calls the `handleOnClick()` function after the button is clicked.
-The `handleOnClick()` references and then executes the `addItem()` function
-by calling `this.props.addItem()`.  
+This code calls the `handleOnClick()` function after the button is clicked. The
+`handleOnClick()` references and then executes the `addItem()` function by
+calling `this.props.addItem()`.
 
 ## Alternative Method
 
 There is an even simpler way to approach bundling our actions and `dispatch`
-into props. The second argument of `connect` will accept a function (as we've seen)
-_or_ an object. If we pass in a function, `mapDispatchToProps()`, we must
-incorporate `dispatch` as with the previous example. If we pass in an object, `connect` handles this step for us! The object just needs to
-contain key/value pairs for each action creator we want to become props.
-In our example, we've using the `addItem` action creator, so the object
-would look like this:
+into props. The second argument of `connect` will accept a function (as we've
+seen) _or_ an object. If we pass in a function, `mapDispatchToProps()`, we must
+incorporate `dispatch` as with the previous example. If we pass in an object,
+`connect` handles this step for us! The object just needs to contain key/value
+pairs for each action creator we want to become props. In our example, we've
+using the `addItem` action creator, so the object would look like this:
 
-```js
+```jsx
 {
-  addItem: addItem
+  addItem: addItem;
 }
 ```
 
 As of JavaScript ES6, when we have an object with a key and value with
 the same name, we can use the shorthand syntax and write:
 
-```js
+```jsx
 {
-  addItem
+  addItem;
 }
 ```
 
@@ -241,34 +238,31 @@ This is all we need to pass in as a second argument for `connect()`.
 
 `App` then changes to look like the following:
 
-```js
-import React, { Component } from 'react';
-import './App.css';
-import { connect } from 'react-redux';
-import { addItem } from  './actions/items';
+```jsx
+import React, { Component } from "react";
+import "./App.css";
+import { connect } from "react-redux";
+import { addItem } from "./actions/items";
 
 class App extends Component {
-
-  handleOnClick = event => {
-    this.props.addItem()
-  }
+  handleOnClick = (event) => {
+    this.props.addItem();
+  };
 
   render() {
-    debugger
+    debugger;
     return (
       <div className="App">
-        <button onClick={this.handleOnClick}>
-          Click
-          </button>
+        <button onClick={this.handleOnClick}>Click</button>
         <p>{this.props.items.length}</p>
       </div>
     );
   }
-};
+}
 
 const mapStateToProps = (state) => {
   return {
-    items: state.items
+    items: state.items,
   };
 };
 
@@ -279,40 +273,42 @@ export default connect(mapStateToProps, { addItem })(App); // Code change: no ma
 > We still need to pass in a function as the first argument, but it can be an
 > anonymous arrow function that handles everything in one line:
 
-```js
-export default connect(state => ({ items: state.items }), { addItem })(App);
+```jsx
+export default connect((state) => ({ items: state.items }), { addItem })(App);
 ```
 
 This is equivalent to writing:
 
-```js
-const mapStateToProps = state => {
+```jsx
+const mapStateToProps = (state) => {
   return {
-    items: state.items
-  }
-}
+    items: state.items,
+  };
+};
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
-    addItem: () => { dispatch(addItem()) }
-  }
-}
+    addItem: () => {
+      dispatch(addItem());
+    },
+  };
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
 ```
 
 ## Default Dispatch Behavior
 
-In addition to this, as per Dan Abramov, the creator of __Redux__:
+In addition to this, as per Dan Abramov, the creator of **Redux**:
 
 > By default mapDispatchToProps is just dispatch => ({ dispatch }). So if you
-don't specify the second argument to connect(), you'll get dispatch injected as
-a prop in your component.
+> don't specify the second argument to connect(), you'll get dispatch injected as
+> a prop in your component.
 
 This means that if we were to simply write:
 
-```js
-export default connect(state => ({ items: state.items }))(App);
+```jsx
+export default connect((state) => ({ items: state.items }))(App);
 ```
 
 ...we would _still_ have `this.props.dispatch()` available to us in App. If you
