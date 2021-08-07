@@ -1,12 +1,9 @@
-//UPDATE **all** CODE SNIPPETS!!
-//REMOVE ID ATTRIBUTE FROM FORM??
-
 # Mapping Dispatch to Props
 
 ## Objectives
 
 - Implement an action creator
-- Learn how to use the mapDispatchToProps method to further streamline our code
+- Learn how to use `mapDispatchToProps` to further streamline our code
 
 
 ### Introduction
@@ -29,16 +26,17 @@ In this codealong we will implement an action creator for a simple todo list app
 We will also learn how to pass a second argument to `connect`, `mapDispatchToProps`, 
 to further streamline and compartmentalize our code.
 
+
 ## Our Todo App
 
 To begin, let's take a look at the starting code provided in `src/App.js`:
 
-```js
+```jsx
 // ./src/App.js
 
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import './App.css';
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import "./App.css";
 
 class App extends Component {
 
@@ -57,6 +55,7 @@ class App extends Component {
     console.log("Todo being added: ", this.state.todo);
     this.props.dispatch({ type: 'ADD_TODO', todo: this.state.todo });
     this.setState({ todo: '' });
+
   }
 
   render() {
@@ -77,7 +76,7 @@ class App extends Component {
       </div>
     );
   }
-};
+}
 
 const mapStateToProps = (state) => {
   return {
@@ -93,7 +92,7 @@ In our `render` you can see we have a simple form with an `onSubmit` handler.
 The form includes a text input box with an `onChange` handler, and a submit 
 button. Below the form we are rendering a list of the todos. 
 
-```javascript
+```jsx
 // ./src/app.js
 ...
 
@@ -124,7 +123,7 @@ In order to make our `App` component a controlled component, we have created a
 local `state` variable which is updated in our `handleOnChange` method and used 
 to populate the text input field:
 
-```javascript
+```jsx
 // ./src/app.js
 ...
 
@@ -146,7 +145,7 @@ action object with type `ADD_TODO` and a payload taken from `this.state`. The
 reducer, which you can see in `reducers/todoListReducer.js`, then uses the 
 information in the action to update the store. 
 
-```javascript
+```jsx
 // ./src/app.js
 ...
 
@@ -166,7 +165,7 @@ our `render` method. `connect` also passes the `dispatch` method as props
 automatically, enabling us to access `this.props.dispatch` in our 
 `handleOnSubmit` method:
 
-```javascript
+```jsx
 // ./src/app.js
 ...
 
@@ -191,7 +190,7 @@ action logged from the reducer.
 
 Currently, in our `handleOnSubmit` method, we are passing our action directly:
 
-```javascript
+```jsx
 this.props.dispatch({ type: 'ADD_TODO', todo: this.state.todo });
 ```
 
@@ -199,7 +198,7 @@ As we learned in the previous lesson, we can instead use an action creator
 method to DRY up our code a bit. Let's go ahead and add an `addTodo` method to 
 our `App` component:
 
-```javascript
+```jsx
 // ./src/app.js
 ...
 
@@ -217,7 +216,7 @@ The `addTodo` action creator returns an action object with a type of 'ADD_TODO'
 and a todo payload taken from our local state. Then we just need to update our 
 `handleOnSubmit` method to use our action creator:
 
-```javascript
+```jsx
   handleOnSubmit(event) {
     event.preventDefault();
     console.log("Todo being added: ", this.state.todo)
@@ -241,7 +240,7 @@ is no longer defined inside our `App` component, we now need to define it with
 `const` and export the function so it will be available to our component. We also 
 need to pass the todo as an argument to `addTodo`. It should look like this: 
 
-```javascript
+```jsx
 // ./src/actions/todo.js
 export const addTodo = (todo) => {
   return { 
@@ -253,20 +252,20 @@ export const addTodo = (todo) => {
 
 To get everything hooked up, let's import our action creator into `App.js`:
 
-```javascript
+```jsx
 import { addTodo } from  './actions/todos';
 ```
 
 Then we just need to modify our dispatch inside the `handleOnSubmit` method as 
 follows:
 
-```javascript
+```jsx
 this.props.dispatch(addTodo(this.state.todo));
 ```
 
 Let's go back to the browser again and give it a try. Everything still works!
 
-#### Using `mapDispatchToProps`
+### Using `mapDispatchToProps`
 
 To quickly review: The first argument passed into `connect()` is a function.
 That function is written to accept the Redux store's state as an argument and
@@ -275,10 +274,10 @@ this returned object will become values we can access in the component we've
 wrapped with `connect()`. The below example, for instance, would make the entire
 state available as a prop:
 
-```js
-const mapStateToProps = state => {
-  return state
-}
+```jsx
+const mapStateToProps = (state) => {
+  return state;
+};
 ```
 
 We call this function `mapStateToProps` because that is what it does. This 
@@ -294,13 +293,14 @@ second function assuming we have access to `dispatch()`. We call it
 the bottom of the `./src/App.js` file, and update our `export` statement 
 accordingly:
 
-``` javascript
+```jsx
 // src/App.js
 
 ...
 
 // This new function takes in dispatch as an argument
 // It then returns an object that contains a function as a value!
+
 const mapDispatchToProps = dispatch => {
   return {
     addTodo: (todo) => {
@@ -317,7 +317,7 @@ function, and passing it through as the second argument. We'll place a debugger
 in our component at the beginning of `render()`, just before the return
 statement. 
 
-```js
+```jsx
 // src/App.js
 ...
 
@@ -358,7 +358,7 @@ With `dispatch` integrated into `this.props.addTodo`, we can change our code
 such that when the `handleOnSubmit()` function gets called, we execute our 
 action creator by referencing it as a prop:
 
-```javascript
+```jsx
 // ./src/App.js
 
 ...
@@ -395,7 +395,7 @@ just needs to contain key/value pairs for each action creator we want to become
 props. In our example, we're using the `addTodo` action creator, so the object
 would look like this:
 
-```js
+```jsx
 {
   addTodo: addTodo
 }
@@ -404,7 +404,7 @@ would look like this:
 As of JavaScript ES6, when we have an object with a key and value with the same 
 name, we can use the shorthand syntax and write:
 
-```js
+```jsx
 {
   addTodo
 }
@@ -414,7 +414,7 @@ This is all we need to pass in as a second argument for `connect()`! So to
 implement this, we will remove the `mapDispatchToProps` method and change the 
 export statement as follows:
 
-```js
+```jsx
 
 export default connect(mapStateToProps, { addTodo })(App); // Code change: no mapDispatchToProps function required!
 ```
@@ -423,21 +423,21 @@ We _could_ go further still and get rid of `mapStateToProps()` as well. We
 still need to pass in a function as the first argument, but it can be an
 anonymous arrow function that handles everything in one line:
 
-```js
+```jsx
 export default connect(state => ({ todos: state.todos }), { addTodo })(App);
 ```
 
 This means we can, if we like, replace all of the code below with the above 
 export statement:
 
-```js
-const mapStateToProps = state => {
+```jsx
+const mapStateToProps = (state) => {
   return {
     todos: state.todos
   }
 }
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
     addTodo: (todo) => {
       dispatch(addTodo(todo))
@@ -450,9 +450,10 @@ export default connect(mapStateToProps, mapDispatchToProps)(App);
 
 With these changes, our final code looks like this:
 
-```js
+```jsx
 
 // ./src/App.js
+
 
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
@@ -509,7 +510,7 @@ export default connect(state => ({ todos: state.todos }), { addTodo })(App);
 
 ```
 
-```js
+```jsx
 
 // ./src/actions/todos.js
 
